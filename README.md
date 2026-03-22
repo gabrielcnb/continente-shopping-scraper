@@ -1,3 +1,6 @@
+![Python](https://img.shields.io/badge/Python-3-blue?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 # continente-shopping-scraper
 
 Desktop app that automates grocery shopping on continente.pt — searches a list of items, selects the best match using fuzzy string matching, and processes each one sequentially.
@@ -28,7 +31,7 @@ Desktop app that automates grocery shopping on continente.pt — searches a list
 pip install PyQt6 selenium undetected-chromedriver webdriver-manager fuzzywuzzy python-Levenshtein
 ```
 
-Google Chrome must be installed. The script targets Chrome version 132. If your installed version differs, update `version_main` in `beta.py`:
+Google Chrome must be installed. The script targets Chrome version 132. If your installed version differs, update `version_main` in `main.py`:
 
 ```python
 driver = uc.Chrome(options=chrome_options, version_main=132)
@@ -37,7 +40,7 @@ driver = uc.Chrome(options=chrome_options, version_main=132)
 ## Usage
 
 ```bash
-python beta.py
+python main.py
 ```
 
 The GUI window opens. Enter your shopping list (one item per line) and click Start. The browser opens continente.pt, accepts cookies automatically, and processes each item. Results and errors are logged in real time in the GUI log panel.
@@ -45,6 +48,10 @@ The GUI window opens. Enter your shopping list (one item per line) and click Sta
 ## File Structure
 
 ```
-compras continente/
-└── beta.py    # Main application — GUI + background scraper worker
+continente-shopping-scraper/
+└── main.py    # Main application — GUI + background scraper worker
 ```
+
+## Disclaimer
+
+This project is provided for educational purposes only. Web scraping may violate the Terms of Service of the target website (continente.pt). Use this tool at your own risk and responsibility. The author is not liable for any misuse or consequences arising from the use of this software.

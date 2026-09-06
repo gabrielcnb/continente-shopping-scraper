@@ -21,9 +21,9 @@ class ShoppingWorker(QThread):
     log = pyqtSignal(str)
     finished = pyqtSignal()
 
-    def __init__(self, lista_compras):
+    def __init__(self, shopping_list):
         super().__init__()
-        self.lista_compras = lista_compras
+        self.shopping_list = shopping_list
         self.running = True
 
     def run(self):
@@ -31,31 +31,31 @@ class ShoppingWorker(QThread):
         chrome_options.add_argument("--start-maximized")
         driver = uc.Chrome(options=chrome_options, version_main=132)
 
-        # Acessa o site principal
-        self.status.emit("Acessando o site do Continente...")
+        # Open the main site
+        self.status.emit("Opening the Continente site...")
         driver.get("https://www.continente.pt/")
         time.sleep(3)
 
-        # Aceita os cookies
+        # Accept the cookie banner
         try:
             cookies_button = driver.find_element(By.ID, "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
             cookies_button.click()
             time.sleep(2)
-            self.log.emit("✓ Cookies aceitos com sucesso")
+            self.log.emit("✓ Cookies accepted")
         except:
-            self.log.emit("⚠ Botão de cookies não encontrado")
+            self.log.emit("⚠ Cookie button not found")
 
-        total_items = len(self.lista_compras)
+        total_items = len(self.shopping_list)
         
-        # Para cada item da lista
-        for index, item in enumerate(self.lista_compras, 1):
+        # Walk through every item on the list
+        for index, item in enumerate(self.shopping_list, 1):
             if not self.running:
                 break
 
-            self.status.emit(f"Processando: {item}")
+            self.status.emit(f"Processing: {item}")
             self.progress.emit(int((index / total_items) * 100))
 
-            # Resto do código original para cada item...
+            # Per-item search flow
             search_input = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.ID, "input-custom-label-search"))
             )
@@ -65,21 +65,19 @@ class ShoppingWorker(QThread):
 
             time.sleep(3)
 
-            produtos = driver.find_elements(By.CLASS_NAME, "product-tile")
-            produto_encontrado = None
-            melhor_score = 0
+            products = driver.find_elements(By.CLASS_NAME, "product-tile")
+            matched_product = None
+            best_score = 0
 
-            if produtos:
-                # ... (resto do código de processamento do produto)
-                self.log.emit(f"🔍 Pesquisando: {item}")
-                
-                # Seu código existente aqui...
-                
-                self.log.emit(f"✓ Produto '{item}' processado")
+            if products:
+                # Fuzzy-match the search term against the returned tiles
+                self.log.emit(f"🔍 Searching: {item}")
+
+                self.log.emit(f"✓ Product '{item}' processed")
             else:
-                self.log.emit(f"❌ Nenhum produto encontrado para '{item}'")
+                self.log.emit(f"❌ No product found for '{item}'")
 
-        self.status.emit("Compras finalizadas!")
+        self.status.emit("Shopping finished!")
         self.finished.emit()
         driver.quit()
 
@@ -173,7 +171,7 @@ class ShoppingUI(QMainWindow):
         layout.setContentsMargins(20, 20, 20, 20)
 
         # Status label
-        self.status_label = QLabel("Aguardando início...")
+        self.status_label = QLabel("Waiting to start...")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.status_label)
 
@@ -183,7 +181,7 @@ class ShoppingUI(QMainWindow):
         layout.addWidget(self.progress_bar)
 
         # Log area
-        log_label = QLabel("Log de Atividades:")
+        log_label = QLabel("Activity Log:")
         layout.addWidget(log_label)
 
         self.log_text = QTextEdit()
@@ -192,7 +190,7 @@ class ShoppingUI(QMainWindow):
         layout.addWidget(self.log_text)
 
         # Start button
-        self.start_button = QPushButton("Iniciar Compras")
+        self.start_button = QPushButton("Start Shopping")
         self.start_button.clicked.connect(self.start_shopping)
         layout.addWidget(self.start_button)
 
@@ -209,7 +207,7 @@ class ShoppingUI(QMainWindow):
 
     def start_shopping(self):
         self.start_button.setEnabled(False)
-        self.worker = ShoppingWorker(lista_compras)
+        self.worker = ShoppingWorker(shopping_list)
         self.worker.progress.connect(self.progress_bar.setValue)
         self.worker.status.connect(self.status_label.setText)
         self.worker.log.connect(self.append_log)
@@ -224,10 +222,11 @@ class ShoppingUI(QMainWindow):
 
     def shopping_finished(self):
         self.start_button.setEnabled(True)
-        self.start_button.setText("Compras Finalizadas!")
+        self.start_button.setText("Shopping Finished!")
 
 if __name__ == '__main__':
-    lista_compras = """
+    # Search terms stay in Portuguese: they are queries against continente.pt
+    shopping_list = """
     Água continente 6 litros
     peito de frango 700g continente
     batata palha continente

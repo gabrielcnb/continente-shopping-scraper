@@ -1,9 +1,9 @@
-![Python](https://img.shields.io/badge/Python-3-blue?logo=python&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
-
-# continente-shopping-scraper
+# Continente Cart
 
 Desktop app that automates grocery shopping on continente.pt. It searches a list of items, selects the best match using fuzzy string matching, and processes each one sequentially.
+
+![Python](https://img.shields.io/badge/Python-3-blue?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Features
 
@@ -48,7 +48,7 @@ The GUI window opens. Enter your shopping list (one item per line) and click Sta
 ## File Structure
 
 ```
-continente-shopping-scraper/
+continente-cart/
 └── main.py    # Main application: GUI plus background scraper worker
 ```
 
